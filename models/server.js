@@ -8,6 +8,7 @@ class Server {
         this.port = process.env.PORT;
         this.path = {
             autenticacion: '/api/autenticacion',
+            procesos: '/api/procesos',
         }
         
         // Middlewares
@@ -34,6 +35,7 @@ class Server {
     routes() {
 
        this.app.use( this.path.autenticacion, require('../routes/autenticacion.routes'));
+       this.app.use( this.path.procesos, require('../routes/procesos.routes'));
     }
 
     listen() {
