@@ -9,6 +9,8 @@ class Server {
         this.path = {
             autenticacion: '/api/autenticacion',
             procesos: '/api/procesos',
+            ofertas: '/api/ofertas',
+            files: '/api/files',
         }
         
         // Middlewares
@@ -36,6 +38,8 @@ class Server {
 
        this.app.use( this.path.autenticacion, require('../routes/autenticacion.routes'));
        this.app.use( this.path.procesos, require('../routes/procesos.routes'));
+       this.app.use( this.path.ofertas, require('../routes/ofertas.routes'));
+       this.app.use( this.path.files, require('../routes/files.routes'));
     }
 
     listen() {
