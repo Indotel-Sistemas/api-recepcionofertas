@@ -5,13 +5,13 @@ const { response, request } = require("express");
 const postProceso = async (req = request, res = response) => {
   const fecha = new Date().toISOString();
   const { nombre, descripcion, creador } = req.body;
-  
+
   try {
     let pool = await sql.connect(config);
     const result = await pool.request().query(`INSERT INTO Procesos(NOMBRE, DESCRIPCION, FECHA, STATUS, CREADOR) values ('${nombre}', '${descripcion}', '${fecha}', 1, '${creador}')`);
     console.log(result)
     pool.close()
-    return res.status(200).json({msg: 'Procesos registrado'});
+    return res.status(200).json({ msg: 'Procesos registrado' });
 
   } catch (error) {
     console.log(error);
@@ -32,15 +32,15 @@ const postProceso = async (req = request, res = response) => {
 //     if(!existeUsuario){
 //       return res.status(403).json({msg: 'Usuario no registrado'});
 //     }
-    
+
 //     const result2 = await pool.request().query(`SELECT * FROM Usuarios WHERE Usuario = '${usuario}' AND PASSWORD='${password}'`);
 //     const credenciales = !!result2.recordset.length;
 //     pool.close()
-    
+
 //     if(!credenciales){
 //       return res.status(403).json({msg: 'Contraseña incorrecta'});
 //     }
-    
+
 //     return res.status(200).json({msg: 'Acceso exitoso'});
 //   } catch (error) {
 //     console.log(error);
@@ -66,11 +66,20 @@ const getProcesos = async (req = request, res = response) => {
   }
 }
 
-const getUsuarioParticipacionProceso = async (req = request, res = response) => {
-  const { idUsuario, idProceso } = req.body;
+const getProcesosParticipacionUsuario = async (req = request, res = response) => {
+  const { usuario } = req.body;
   try {
     let pool = await sql.connect(config);
-    const result = await pool.request().query(`SELECT * FROM Participacion_Procesos where ID_USUARIO = ${idUsuario} and ID_PROCESO = ${idProceso}`);
+    const usuarioIdReq = await pool.request().query(`SELECT * FROM Usuarios WHERE usuario='${usuario}'`);
+    if (!usuarioIdReq.recordset.length) {
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
+    }
+    const usuarioID = usuarioIdReq.recordset[0]['ID'];
+
+    const result = await pool.request().query(` SELECT P.* FROM Procesos P 
+    INNER JOIN Participacion_Procesos PP ON P.ID = PP.ID_PROCESO
+    INNER JOIN Usuarios U ON U.ID = PP.ID_USUARIO
+    WHERE U.ID = ${usuarioID}`);
     pool.close()
     return res.status(200).json(result.recordset);
   } catch (error) {
@@ -85,7 +94,7 @@ const getUsuarioParticipacionProceso = async (req = request, res = response) => 
 module.exports = {
   postProceso,
   getProcesos,
-  getUsuarioParticipacionProceso
+  getProcesosParticipacionUsuario
   // postChecktUsuario,
   // postLogin
   // getTipo,

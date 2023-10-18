@@ -21,6 +21,7 @@ const getFile = async (req = request, res = response) => {
     res.sendFile(path.join(filePath, fileName));
 
   } catch (error) {
+    console.log('getFile error')
     console.log(error)
     res.status(500).send({ msg: 'Error al obtner el archivo' })
   }
@@ -46,22 +47,23 @@ const getUserIdxFiles = async (req = request, res = response) => {
     res.status(200).send({ msg: 'Archivos encontrados', data: result.recordset});
 
   } catch (error) {
+    console.log('getUserIdxFiles error')
     console.log(error)
     res.status(500).send({ msg: 'Error al obtner el archivo' })
   }
 }
 const deleteUserFile = async (req = request, res = response) => {
-  const { idxArchivo } = req.body;
+  const { fileIdx } = req.body;
   try {
     let pool = await sql.connect(config);
-    const result1 = await pool.request().query(`SELECT TOP 1 * FROM Ofertas WHERE IDX_ARCHIVO = '${idxArchivo}' and STATUS = 1`);
+    const result1 = await pool.request().query(`SELECT TOP 1 * FROM Ofertas WHERE IDX_ARCHIVO = '${fileIdx}' and STATUS = 1`);
    
     if (!result1.recordset.length) {
       res.status(404).send({ msg: 'Archivo no encontrado' })
     }
     const fileName = result1.recordset[0]['NOMBRE_ARCHIVO'];
 
-    const result = await pool.request().query(`UPDATE Ofertas SET STATUS = 0 WHERE IDX_ARCHIVO = '${idxArchivo}'`);
+    const result = await pool.request().query(`UPDATE Ofertas SET STATUS = 0 WHERE IDX_ARCHIVO = '${fileIdx}'`);
     if (!result.rowsAffected.length) {
       res.status(500).send({ msg: 'Error al eliminar archivo.' })
     }

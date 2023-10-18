@@ -6,7 +6,6 @@ const { config } = require("../database/dbconfig");
 const { v4: uuidv4 } = require('uuid');
 
 const postOferta = async (req = request, res = response) => {
-
   const fecha = new Date().toISOString();
   const { usuario, idProceso } = req.body;
 
@@ -20,12 +19,11 @@ const postOferta = async (req = request, res = response) => {
 
     for (let i = 0; i < req.files.length; i++) {
       const nombreArchivo = req.files[i].filename;
-      let query = `INSERT INTO Ofertas(ID_USUARIO, NOMBRE_ARCHIVO, IDX_ARCHIVO, FECHA, ID_PROCESO) values (${usuarioID}, '${nombreArchivo}', '${uuidv4()}', '${fecha}', ${idProceso})`
+      let query = `INSERT INTO Ofertas(ID_USUARIO, NOMBRE_ARCHIVO, IDX_ARCHIVO, FECHA, ID_PROCESO, STATUS) values (${usuarioID}, '${nombreArchivo}', '${uuidv4()}', '${fecha}', ${idProceso}, 1)`
       const result = await pool.request().query(query);
-      console.log(result)
     }
     pool.close()
-    return res.status(200).json({ msg: 'Usuario registrado' });
+    return res.status(200).json({ msg: 'Oferta registrada' });
 
   } catch (error) {
     console.log(error);

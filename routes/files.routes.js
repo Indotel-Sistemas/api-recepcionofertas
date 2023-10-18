@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/:fileIdx", getFile);
 router.post("/UserIdxFiles", getUserIdxFiles);
-router.delete("/UserIdxFiles", deleteUserFile);
+router.post("/deleteFile", deleteUserFile);
 
 
 // router.get("/tipos", getTipo);
