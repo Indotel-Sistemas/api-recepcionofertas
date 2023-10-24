@@ -91,10 +91,36 @@ const getProcesosParticipacionUsuario = async (req = request, res = response) =>
   }
 }
 
+const getUsuariosProceso = async (req = request, res = response) => {
+  const { idProceso } = req.body;
+  try {
+    let pool = await sql.connect(config);
+    const result = await pool.request().query(`SELECT PP.ID
+          ,PP.ID_USUARIO
+          ,U.USUARIO
+          ,U.EMPRESA
+          ,PP.ID_PROCESO
+      FROM [RECEPCION_OFERTAS].[dbo].[Participacion_Procesos] PP
+      INNER JOIN Usuarios U on U.ID = PP.ID_USUARIO
+      WHERE PP.ID_PROCESO = ${idProceso}`);
+    pool.close()
+    return res.status(200).json(result.recordset);
+  } catch (error) {
+    console.log(error);
+    if (error.code === 'EREQUEST') {
+      return res.status(400).json(error);
+    }
+    return res.status(500).json(error);
+  }
+}
+
+
+
 module.exports = {
   postProceso,
   getProcesos,
-  getProcesosParticipacionUsuario
+  getProcesosParticipacionUsuario,
+  getUsuariosProceso
   // postChecktUsuario,
   // postLogin
   // getTipo,
